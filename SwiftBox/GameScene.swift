@@ -10,7 +10,9 @@ import SpriteKit
 
 class GameScene: SKScene {
     
-    var touchList: [UITouch] = []
+    var touchList: [Touch] = []
+    
+    var touchMoved: [Bool] = []
     
     override func didMoveToView(view: SKView) {
         /* detect gestures */
@@ -54,7 +56,7 @@ class GameScene: SKScene {
         ball.position = CGPoint(x: 120, y: 250)
         println(children.count)
         addChild(ball)
-
+        
         physicsBody = SKPhysicsBody(edgeLoopFromRect: frame)
     }
 
@@ -71,33 +73,43 @@ class GameScene: SKScene {
         
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        for touch: AnyObject in touches {
-            let t = touch as UITouch
-            touchList.append(t)
-            let pos = t.locationInView(self.view)
-            println(" at \(pos.x) \(pos.y)")
-        //    self.size = CGSize(width:pos.x, height: pos.y)
-            let p2 = self.convertPointFromView(pos)
-            for i in 0...children.count-1 {
-                let ok = children[i].containsPoint(p2)
-                println(" hit child \(i) is \(ok)")
+    // Find id of child at given point in world (or -1 if none)
+    func childAtPos(pos: CGPoint) -> Int {
+        for i in 0...children.count-1 {
+            if children[i].containsPoint(pos) {
+                return i
             }
         }
-        println(touchList.count)
+        return -1
     }
+    
+
+    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+        for touch: AnyObject in touches {
+            let u = touch as UITouch
+            let p = self.convertPointFromView(u.locationInView(view))
+            let t = Touch(uit:u, pos:p)
+            let c = childAtPos(p)
+            if c >= 0 {
+                t.bodyId = c
+                t.offset = (p - children[c].position).rotate(-children[c].zRotation)
+            }
+            touchList.append(t)
+        }
+        (children[1] as SKNode).physicsBody?.applyAngularImpulse(1)
+    }
+    
     
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         for touch: AnyObject in touches {
             let t = touch as UITouch
             for i in 0...touchList.count-1 {
-                if touchList[i] == t {
+                if touchList[i].touch == t {
                     touchList.removeAtIndex(i)
                     break
                 }
             }
         }
-        println(touchList.count)
     }
     
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
@@ -106,6 +118,9 @@ class GameScene: SKScene {
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+//        println(currentTime)
+//        println("box \(children[1].zRotation) ball \(children[2].zRotation)")
+        
     }
 }
 
