@@ -62,7 +62,7 @@ class GameScene: SKScene {
 
     
     func handleTap() {
-        (children[0] as SKNode).physicsBody?.applyAngularImpulse(1)
+        (children[0] as! SKNode).physicsBody?.applyAngularImpulse(1)
     }
     
     func handleLongPress() {
@@ -83,10 +83,9 @@ class GameScene: SKScene {
         return -1
     }
     
-
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         for touch: AnyObject in touches {
-            let u = touch as UITouch
+            let u = touch as! UITouch
             let p = self.convertPointFromView(u.locationInView(view))
             let t = Touch(uit:u, pos:p)
             let c = childAtPos(p)
@@ -96,13 +95,13 @@ class GameScene: SKScene {
             }
             touchList.append(t)
         }
-        (children[1] as SKNode).physicsBody?.applyAngularImpulse(1)
+        (children[1] as! SKNode).physicsBody?.applyAngularImpulse(1)
     }
     
     
-    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
         for touch: AnyObject in touches {
-            let t = touch as UITouch
+            let t = touch as! UITouch
             for i in 0...touchList.count-1 {
                 if touchList[i].touch == t {
                     touchList.removeAtIndex(i)
@@ -112,7 +111,7 @@ class GameScene: SKScene {
         }
     }
     
-    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
         /* */
     }
    
