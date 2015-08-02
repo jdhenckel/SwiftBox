@@ -12,21 +12,24 @@ class GameScene: SKScene {
     
 //    var touchList: [Touch] = []
 //    var touchMoved: [Bool] = []
+    var world: SKNode!
+    
     
     override func didMoveToView(view: SKView) {
         
         /* detect gestures */
-        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "handleTap:"))
-        view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "handleLongPress:"))
+//        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "handleTap:"))
+//        view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "handleLongPress:"))
         view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "handlePan:"))
-        view.addGestureRecognizer(UIRotationGestureRecognizer(target: self, action: "handleRotate:"))
+//        view.addGestureRecognizer(UIRotationGestureRecognizer(target: self, action: "handleRotate:"))
         
         /* Setup your scene here */
         
         physicsWorld.gravity = CGVector(dx: 0, dy: -1)
         
-        let worldFrame = frame.rectByOffsetting(dx: -frame.midX, dy: -frame.midY)
-        let world = SKSpriteNode(color: UIColor.blackColor(), size: self.frame.size)
+//        let worldFrame =
+        world = SKNode()
+            //SKSpriteNode(color: UIColor.blackColor(), size: self.frame.size)
         world.position = CGPoint(x: frame.midX, y: frame.midY)
         addChild(world)
         
@@ -56,13 +59,15 @@ class GameScene: SKScene {
         ball.position = CGPoint(x: 0, y: 0)
         world.addChild(ball)
         
-        let edgeBody = SKPhysicsBody(edgeLoopFromRect: worldFrame)
-        edgeBody.dynamic = false
-        edgeBody.restitution = 1
-        edgeBody.friction = 0
-        let edge = SKNode()
-        edge.physicsBody = edgeBody
-        world.addChild(edge)
+//        let edgeBody = SKPhysicsBody(edgeLoopFromRect: worldFrame)
+//        edgeBody.dynamic = false
+//        edgeBody.restitution = 1
+//        edgeBody.friction = 0
+//        let edge = SKNode()
+//        edge.physicsBody = edgeBody
+//        world.addChild(edge)
+        
+        world.addChild(createBoundary())
         
         /* build the menu here */
         let myLabel = SKLabelNode(fontNamed:"helv")
@@ -72,6 +77,63 @@ class GameScene: SKScene {
         addChild(myLabel)
         
 
+    }
+    
+    
+    
+    // Create a node that represents the boundary of the world. It could be a single
+    // path node, or a heirarchy of non-dynamic shape nodes
+    
+    
+    func createBoundary() -> SKNode {
+        return createBoundarySet()
+    }
+    
+    func createBoundarySet() -> SKNode {
+        let shape = SKNode()
+        let t = frame.width
+        let h = frame.height
+        shape.addChild(createBoundaryBox(x: -t, y: 0, w: t, h: h))
+        shape.addChild(createBoundaryBox(x: t, y: 0, w: t, h: h))
+        shape.addChild(createBoundaryBox(x: 0, y: (h + t) / 2, w: 3 * t, h: t))
+        shape.addChild(createBoundaryBox(x: 0, y: -(h + t) / 2, w: 3 * t, h: t))
+        return shape
+    }
+    
+    func createBoundaryBox(#x: CGFloat, y: CGFloat, w: CGFloat, h: CGFloat) -> SKNode {
+        let shape = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: w,height: h))
+        shape.position = CGPoint(x: x,y: y)
+        let body = SKPhysicsBody(rectangleOfSize: CGSize(width: w,height: h))
+        body.dynamic = false
+        body.restitution = 1
+        body.friction = 0
+        shape.physicsBody = body
+        return shape
+    }
+    
+    func createBoundaryPath() -> SKNode {
+        let path = CGPathCreateMutable()
+        let inner = frame.rectByOffsetting(dx: -frame.midX, dy: -frame.midY)
+        let outer = inner.rectByInsetting(dx: -frame.midX, dy: -frame.midX)
+        CGPathMoveToPoint(path, nil, inner.origin.x, inner.origin.y)
+        CGPathAddLineToPoint(path, nil, inner.origin.x, inner.origin.y + inner.size.height)
+        CGPathAddLineToPoint(path, nil, inner.origin.x + inner.size.width, inner.origin.y + inner.size.height)
+        CGPathAddLineToPoint(path, nil, inner.origin.x + inner.size.width, inner.origin.y)
+        CGPathCloseSubpath(path)
+        CGPathMoveToPoint(path, nil, outer.origin.x, outer.origin.y)
+        CGPathAddLineToPoint(path, nil, outer.origin.x + outer.size.width, outer.origin.y)
+        CGPathAddLineToPoint(path, nil, outer.origin.x + outer.size.width, outer.origin.y + outer.size.height)
+        CGPathAddLineToPoint(path, nil, outer.origin.x, outer.origin.y + outer.size.height)
+        CGPathCloseSubpath(path)
+        let shape = SKShapeNode(path: path)
+        shape.fillColor = UIColor.blackColor()
+        shape.strokeColor = UIColor.whiteColor()
+        let body = SKPhysicsBody(edgeLoopFromRect: inner)
+        body.dynamic = false
+        body.restitution = 1
+        body.friction = 0
+        shape.physicsBody = body
+        return shape
     }
 
     
@@ -134,9 +196,16 @@ class GameScene: SKScene {
 //        }
 //        return -1
 //    }
-//
+
+    
 //    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-//        for touch: AnyObject in touches {
+//        for t in touches {
+//            if let touch = t as? UITouch {
+//                let pos = convertPointFromView(touch.locationInView(self.view!))
+//                let posInWorld = world.convertPoint(pos, fromNode: self)
+//                let pos =
+//            }
+//            
 //            let u = touch as! UITouch
 //            let p = self.convertPointFromView(u.locationInView(view))
 //            let t = Touch(uit:u, pos:p)
@@ -162,10 +231,10 @@ class GameScene: SKScene {
 //            }
 //        }
 //    }
-//    
-//    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
-//        /* */
-//    }
+    
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        /* */
+    }
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
