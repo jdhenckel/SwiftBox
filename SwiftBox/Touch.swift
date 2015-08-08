@@ -8,15 +8,22 @@
 
 import SpriteKit
 
-class Touch {
-    var touch: UITouch? = nil
-    var moved: Bool = false
-    var pos: CGPoint
+class Touch : Printable {
+    var touch: UITouch!
+    var startPos: CGPoint
+    var endPos: CGPoint = CGPoint(x: 0, y: 0)
     var bodyId: Int = -1
-    var offset: CGPoint = CGPoint(x: 0, y: 0)
+    var moved: Int = 0
+    var startTime: CFTimeInterval
     
     init(uit: UITouch, pos:CGPoint) {
-        self.touch = uit
-        self.pos = pos
+        touch = uit
+        startPos = pos
+        startTime = CFAbsoluteTimeGetCurrent()
     }
+    
+    var description : String {
+        return "{\(moved), \(startPos), \(endPos), \(bodyId), \(startTime)}"
+    }
+
 }

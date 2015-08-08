@@ -10,8 +10,7 @@ import SpriteKit
 
 class GameScene: SKScene {
     
-//    var touchList: [Touch] = []
-//    var touchMoved: [Bool] = []
+    var touchList: [Touch] = []
     var world: SKNode!
     
     
@@ -20,7 +19,7 @@ class GameScene: SKScene {
         /* detect gestures */
 //        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: "handleTap:"))
 //        view.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: "handleLongPress:"))
-        view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "handlePan:"))
+ //       view.addGestureRecognizer(UIPanGestureRecognizer(target: self, action: "handlePan:"))
 //        view.addGestureRecognizer(UIRotationGestureRecognizer(target: self, action: "handleRotate:"))
         
         /* Setup your scene here */
@@ -86,7 +85,7 @@ class GameScene: SKScene {
     
     
     func createBoundary() -> SKNode {
-        return createBoundarySet()
+        return createBoundaryPath()
     }
     
     func createBoundarySet() -> SKNode {
@@ -205,7 +204,7 @@ class GameScene: SKScene {
 //                let posInWorld = world.convertPoint(pos, fromNode: self)
 //                let pos =
 //            }
-//            
+//
 //            let u = touch as! UITouch
 //            let p = self.convertPointFromView(u.locationInView(view))
 //            let t = Touch(uit:u, pos:p)
@@ -218,8 +217,8 @@ class GameScene: SKScene {
 //        }
 //        (children[1] as! SKNode).physicsBody?.applyAngularImpulse(1)
 //    }
-//    
-//    
+//
+//
 //    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
 //        for touch: AnyObject in touches {
 //            let t = touch as! UITouch
@@ -232,13 +231,50 @@ class GameScene: SKScene {
 //        }
 //    }
     
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        for t in touches {
+            if let touch = t as? UITouch {
+                let pos = convertPointFromView(touch.locationInView(self.view!))
+                touchList.append(Touch(uit: touch, pos: pos))
+            }
+        }
+    }
+
+
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        for t in touches {
+            if let touch = t as? UITouch {
+                for (i, item) in enumerate(touchList) {
+                    if item.touch == touch {
+                        touchList.removeAtIndex(i)
+                        break
+                    }
+                }
+            }
+        }
+    }
+    
     override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
-        /* */
+        for t in touches {
+            if let touch = t as? UITouch {
+                let pos = convertPointFromView(touch.locationInView(self.view!))
+                for (i, item) in enumerate(touchList) {
+                    if item.touch == touch {
+                        item.endPos = pos
+                        item.moved += 1
+                        break
+                    }
+                }
+            }
+        }
     }
    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
-//        println(currentTime)
+        println("\(currentTime) ")
+        for (i, item) in enumerate(touchList) {
+            println("       \(i) : \(item)")
+        }
 //        println("box \(children[1].zRotation) ball \(children[2].zRotation)")
         
     }
