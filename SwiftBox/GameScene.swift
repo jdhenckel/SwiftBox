@@ -14,6 +14,9 @@ class GameScene: SKScene {
 //    var touchMoved: [Bool] = []
     var world: SKNode!
     
+    let font = "Courier" // "Chalkduster"
+    let fontSize = 10 as CGFloat
+    let fontWidthFactor = 0.6 as CGFloat
     
     override func didMoveToView(view: SKView) {
         
@@ -34,7 +37,7 @@ class GameScene: SKScene {
         addChild(world)
         
         let box = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 200, height: 100))
-        box.position = CGPoint(x: 0, y: 80)
+        box.position = CGPoint(x: 10, y: 80)
         let boxBody = SKPhysicsBody(rectangleOfSize: box.size)
         boxBody.dynamic = true
         boxBody.mass = 1
@@ -70,11 +73,46 @@ class GameScene: SKScene {
         world.addChild(createBoundary())
         
         /* build the menu here */
-        let myLabel = SKLabelNode(fontNamed:"helv")
+        let myLabel = SKLabelNode(fontNamed:"Courier")
         myLabel.text = "Hello, World!"
         myLabel.fontSize = 10;
         myLabel.position = world.position
-        addChild(myLabel)
+   //     addChild(myLabel)
+        ;
+        if true    {
+            /* build the menu here */
+            let myLabel = SKLabelNode(fontNamed:"Times")
+            myLabel.text = "Gravity: 9.8527 m/s"
+            myLabel.fontSize = 10
+            myLabel.position = world.position + CGPoint(x: 0,y: 20)
+          //  addChild(myLabel)
+        }
+        
+        if true    {
+            /* build the menu here */
+            
+            let myLabel = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 1, height: 1), cornerRadius: 0)
+            myLabel.position = world.position + CGPoint(x: 0,y: 0)
+            addChild(myLabel)
+        }
+        if true    {
+            /* build the menu here */
+            let t = "This is jaypkq: 1.234 m/s"
+            let n = CGFloat(t.lengthOfBytesUsingEncoding(t.smallestEncoding))
+            println(n)
+            let w = n * fontSize * fontWidthFactor
+            let h = fontSize * 1.4
+//            let top = SKSpriteNode(color: UIColor.brownColor(), size: CGSize(width: 100,height: 10))
+            let top = SKShapeNode(rect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: fontSize/3)
+            let myLabel = SKLabelNode(fontNamed:font)
+            myLabel.text = t
+            myLabel.fontSize = fontSize
+            myLabel.verticalAlignmentMode = .Bottom
+            myLabel.horizontalAlignmentMode = .Left
+            myLabel.position = world.position + CGPoint(x: 0,y: 0)
+            myLabel.addChild(top)
+            addChild(myLabel)
+        }
         
 
     }

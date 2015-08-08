@@ -8,6 +8,9 @@
 
 import SpriteKit
 
+// NOT NEEDED BECAUSE EACH SKNode has Userdata
+
+
 class Body {
     
     var node: SKNode?
