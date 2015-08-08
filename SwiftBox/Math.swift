@@ -47,17 +47,5 @@ func *= (inout u: CGPoint, a: CGFloat) { u.x *= a; u.y *= a }
 func /= (inout u: CGPoint, a: CGFloat) { u.x /= a; u.y /= a }
 prefix func -(inout u: CGPoint) -> CGPoint { return CGPoint(x: -u.x,y: -u.y); }
 
-class Foo {
-    var x:Int = 0
-}
-
-func test1(a:Foo) {    println(a.x)  }
-
-func test2(a:Foo?) {   println(a!.x) }
-
-func test3(a:Foo!) {    println(a.x)  }
-
-func test4(a:Foo) {    println(a.x)  }
-
 
 
