@@ -10,12 +10,21 @@ import SpriteKit
 
 class GameScene: SKScene {
     
+    // A list of up to 5 touch objects. The oldest touch is always the first in the array.
     var touchList: [Touch] = []
-    var world: SKNode!
+
+    // All nodes with physicsBody are under this node.
+    var worldNode: SKNode!
     
-    let font = "Courier" // "Chalkduster"
-    let fontSize = 10 as CGFloat
-    let fontWidthFactor = 0.6 as CGFloat
+    // All menu nodes are beneath this node
+    var menuNode: SKNode!
+    
+    var touchState: UIGestureRecognizerState = .Possible
+    enum TouchTarget { case None, Menu, Body, Joint, World }
+    var touchTarget = TouchTarget.None
+    var touchLabel: SKLabelNode?
+    var touchNode: SKNode?
+    
     
     override func didMoveToView(view: SKView) {
         
@@ -30,10 +39,10 @@ class GameScene: SKScene {
         physicsWorld.gravity = CGVector(dx: 0, dy: -1)
         
 //        let worldFrame =
-        world = SKNode()
+        worldNode = SKNode()
             //SKSpriteNode(color: UIColor.blackColor(), size: self.frame.size)
-        world.position = CGPoint(x: frame.midX, y: frame.midY)
-        addChild(world)
+        worldNode.position = CGPoint(x: frame.midX, y: frame.midY)
+        addChild(worldNode)
         
         let box = SKSpriteNode(color: UIColor.blueColor(), size: CGSize(width: 200, height: 100))
         box.position = CGPoint(x: 10, y: 80)
@@ -45,7 +54,7 @@ class GameScene: SKScene {
         boxBody.restitution = 1
         boxBody.friction = 0
         box.physicsBody = boxBody
-        world.addChild(box)
+        worldNode.addChild(box)
         
         let ballBody = SKPhysicsBody(circleOfRadius: 40)
         ballBody.dynamic = true
@@ -59,7 +68,22 @@ class GameScene: SKScene {
         ball.strokeColor = UIColor.clearColor()
         ball.physicsBody = ballBody
         ball.position = CGPoint(x: 0, y: 0)
-        world.addChild(ball)
+        worldNode.addChild(ball)
+
+        worldNode.addChild(createBoundary())
+
+        //------------
+        // menu
+        menuNode = SKNode()
+        menuNode.position = CGPoint(x: Menu.fontSize / 2, y: frame.height / 2 - Menu.fontSize * 1.2)
+        addChild(menuNode)
+        
+        menuNode.add(Menu("first menu", { (x:SKNode) in println("test") }))
+        
+        menuNode.add("test2")
+        menuNode.add("a test3")
+        menuNode.add("this test4")
+        
         
 //        let edgeBody = SKPhysicsBody(edgeLoopFromRect: worldFrame)
 //        edgeBody.dynamic = false
@@ -69,50 +93,49 @@ class GameScene: SKScene {
 //        edge.physicsBody = edgeBody
 //        world.addChild(edge)
         
-        world.addChild(createBoundary())
         
-        /* build the menu here */
-        let myLabel = SKLabelNode(fontNamed:"Courier")
-        myLabel.text = "Hello, World!"
-        myLabel.fontSize = 10;
-        myLabel.position = world.position
-   //     addChild(myLabel)
-        ;
-        if true    {
-            /* build the menu here */
-            let myLabel = SKLabelNode(fontNamed:"Times")
-            myLabel.text = "Gravity: 9.8527 m/s"
-            myLabel.fontSize = 10
-            myLabel.position = world.position + CGPoint(x: 0,y: 20)
-          //  addChild(myLabel)
-        }
-        
-        if true    {
-            /* build the menu here */
-            
-            let myLabel = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 1, height: 1), cornerRadius: 0)
-            myLabel.position = world.position + CGPoint(x: 0,y: 0)
-            addChild(myLabel)
-        }
-        if true    {
-            /* build the menu here */
-            let t = "This is jaypkq: 1.234 m/s"
-            let n = CGFloat(t.lengthOfBytesUsingEncoding(t.smallestEncoding))
-            println(n)
-            let w = n * fontSize * fontWidthFactor
-            let h = fontSize * 1.4
-//            let top = SKSpriteNode(color: UIColor.brownColor(), size: CGSize(width: 100,height: 10))
-            let top = SKShapeNode(rect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: fontSize/3)
-            let myLabel = SKLabelNode(fontNamed:font)
-            myLabel.text = t
-            myLabel.fontSize = fontSize
-            myLabel.verticalAlignmentMode = .Bottom
-            myLabel.horizontalAlignmentMode = .Left
-            myLabel.position = world.position + CGPoint(x: 0,y: 0)
-            myLabel.addChild(top)
-            addChild(myLabel)
-        }
-        
+//        /* build the menu here */
+//        let myLabel = SKLabelNode(fontNamed:"Courier")
+//        myLabel.text = "Hello, World!"
+//        myLabel.fontSize = 10;
+//        myLabel.position = worldNode.position
+//   //     addChild(myLabel)
+//        ;
+//        if true    {
+//            /* build the menu here */
+//            let myLabel = SKLabelNode(fontNamed:"Times")
+//            myLabel.text = "Gravity: 9.8527 m/s"
+//            myLabel.fontSize = 10
+//            myLabel.position = worldNode.position + CGPoint(x: 0,y: 20)
+//          //  addChild(myLabel)
+//        }
+//        
+//        if true    {
+//            /* build the menu here */
+//            
+//            let myLabel = SKShapeNode(rect: CGRect(x: 0, y: 0, width: 1, height: 1), cornerRadius: 0)
+//            myLabel.position = worldNode.position + CGPoint(x: 0,y: 0)
+//            addChild(myLabel)
+//        }
+//        if true    {
+//            /* build the menu here */
+//            let t = "This is jaypkq: 1.234 m/s"
+//            let n = CGFloat(t.lengthOfBytesUsingEncoding(t.smallestEncoding))
+//            println(n)
+//            let w = n * fontSize * fontWidthFactor
+//            let h = fontSize * 1.4
+////            let top = SKSpriteNode(color: UIColor.brownColor(), size: CGSize(width: 100,height: 10))
+//            let top = SKShapeNode(rect: CGRect(x: 0, y: 0, width: w, height: h), cornerRadius: fontSize/3)
+//            let myLabel = SKLabelNode(fontNamed:font)
+//            myLabel.text = t
+//            myLabel.fontSize = fontSize
+//            myLabel.verticalAlignmentMode = .Bottom
+//            myLabel.horizontalAlignmentMode = .Left
+//            myLabel.position = worldNode.position + CGPoint(x: 0,y: 0)
+//            myLabel.addChild(top)
+//            addChild(myLabel)
+//        }
+//        
 
     }
     
@@ -175,8 +198,7 @@ class GameScene: SKScene {
 
     
     func handleTap(sender:UITapGestureRecognizer) {
-        let world = children[0] as! SKNode
-        let box = world.children[0] as! SKNode
+        let box = worldNode.children[0] as! SKNode
         box.physicsBody?.applyAngularImpulse(1)
     }
     
@@ -194,7 +216,6 @@ class GameScene: SKScene {
     
     
     func handlePan(sender:UIPanGestureRecognizer) {
-        let world = children[0] as! SKNode
         struct Save {
             static var node: SKNode? = nil
             static var pos = CGPointZero
@@ -202,12 +223,12 @@ class GameScene: SKScene {
         var pos = convertPointFromView(sender.locationInView(self.view!))
         switch sender.state {
         case .Began:
-            Save.node = world
+            Save.node = worldNode
             Save.pos = pos
-            let posInWorld = world.convertPoint(pos, fromNode: self)
-            for i in 0...world.children.count-1 {
-                if world.children[i].containsPoint(posInWorld) {
-                    Save.node = world.children[i] as? SKNode
+            let posInWorld = worldNode.convertPoint(pos, fromNode: self)
+            for i in 0...worldNode.children.count-1 {
+                if worldNode.children[i].containsPoint(posInWorld) {
+                    Save.node = worldNode.children[i] as? SKNode
                     Save.node?.physicsBody?.dynamic = false
                     break
                 }
@@ -223,74 +244,18 @@ class GameScene: SKScene {
         }
     }
     
-    
-    // Find id of child at given point in world (or -1 if none)
-//    func childAtPos(pos: CGPoint) -> Int {
-//        for i in 0...children.count-1 {
-//            if children[i].containsPoint(pos) {
-//                return i
-//            }
-//        }
-//        return -1
-//    }
-
-    
-//    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-//        for t in touches {
-//            if let touch = t as? UITouch {
-//                let pos = convertPointFromView(touch.locationInView(self.view!))
-//                let posInWorld = world.convertPoint(pos, fromNode: self)
-//                let pos =
-//            }
-//
-//            let u = touch as! UITouch
-//            let p = self.convertPointFromView(u.locationInView(view))
-//            let t = Touch(uit:u, pos:p)
-//            let c = childAtPos(p)
-//            if c >= 0 {
-//                t.bodyId = c
-//                t.offset = (p - children[c].position).rotate(-children[c].zRotation)
-//            }
-//            touchList.append(t)
-//        }
-//        (children[1] as! SKNode).physicsBody?.applyAngularImpulse(1)
-//    }
-//
-//
-//    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
-//        for touch: AnyObject in touches {
-//            let t = touch as! UITouch
-//            for i in 0...touchList.count-1 {
-//                if touchList[i].touch == t {
-//                    touchList.removeAtIndex(i)
-//                    break
-//                }
-//            }
-//        }
-//    }
-    
     override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
         for t in touches {
             if let touch = t as? UITouch {
                 let pos = convertPointFromView(touch.locationInView(self.view!))
                 touchList.append(Touch(uit: touch, pos: pos))
-            }
-        }
-    }
-
-
-    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
-        for t in touches {
-            if let touch = t as? UITouch {
-                for (i, item) in enumerate(touchList) {
-                    if item.touch == touch {
-                        touchList.removeAtIndex(i)
-                        break
-                    }
+                if touchList.count == 1 {
+                    touchState = .Began
                 }
             }
         }
     }
+
     
     override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
         for t in touches {
@@ -299,21 +264,80 @@ class GameScene: SKScene {
                 for (i, item) in enumerate(touchList) {
                     if item.touch == touch {
                         item.endPos = pos
-                        item.moved += 1
+                        item.moveCount += 1
+                        touchState = .Changed
                         break
                     }
                 }
             }
         }
     }
-   
-    override func update(currentTime: CFTimeInterval) {
-        /* Called before each frame is rendered */
-        println("\(currentTime) ")
-        for (i, item) in enumerate(touchList) {
-            println("       \(i) : \(item)")
+
+    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
+        for t in touches {
+            if let touch = t as? UITouch {
+                for (i, item) in enumerate(touchList) {
+                    if item.touch == touch {
+                        if i == 0 {
+                            touchState = .Ended
+                        }
+                        else {
+                            touchList.removeAtIndex(i)
+                        }
+                        break
+                    }
+                }
+            }
         }
-//        println("box \(children[1].zRotation) ball \(children[2].zRotation)")
+    }
+    
+    override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
+        // handle cancel the same as end
+        touchesEnded(touches, withEvent: event)
+    }
+    
+    /*
+    Called before each frame is rendered
+    */
+    override func update(currentTime: CFTimeInterval) {
+        for (i, item) in enumerate(touchList) {
+            item.update(currentTime)
+        }
+    
+        if touchState == .Began {
+            // Test new touch type: world, menu, joint or body
+            print("begin touch ")
+            let pos = touchList[0].startPos
+            if let label = menuNode.find(pos) {
+                touchTarget = .Menu
+                Menu.invert(label)
+            }
+            else {
+                let posInWorld = worldNode.convertPoint(pos, fromNode: self)
+                for (i, node) in enumerate(worldNode.children) {
+                    if let shape = node as? SKNode {
+                        touchNode = shape
+                        shape.physicsBody!.dynamic = false
+                        touchTarget = .Body
+                        break
+                    }
+                }
+            }
+        }
+        else if touchState == .Possible && touchList.count > 0 {
+            // Test long press
+        }
+        else if touchState == .Changed {
+            
+        }
+        else if touchState == .Ended {
+            
+            touchList.removeAll(keepCapacity: true)
+        }
+        
+        // Reset the event type flag
+        touchState = .Possible
+
         
     }
 }

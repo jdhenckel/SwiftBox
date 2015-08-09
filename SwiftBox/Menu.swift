@@ -12,67 +12,24 @@ import SpriteKit
 // The menu is a tree of label nodes, child[0] of each is a shape node.
 // and child[1] is a node with a list of descendants
 
-class Menu {
+// Pretty good fonts (iosfonts.com)
+// *ArialMT, **ChalkboardSE-Regular, *DevanagariSangamMN, *Kailasa, *Palatino-Roman, **Verdana, Zapfino
+//"*Courier" // "*Chalkduster"
+//
 
-    static let font = "Courier" // "Chalkduster"
-    static let fontSize = 10 as CGFloat
+class Menu {
     
+    static let font = "ChalkboardSE-Regular"
+    static let fontSize = 14 as CGFloat
     
-    static func add(parent: SKNode, name: String) -> SKLabelNode {
-        let nameLen = CGFloat(name.lengthOfBytesUsingEncoding(name.smallestEncoding))
-        println(nameLen)
-        let boxWidth = nameLen * fontSize * 0.6
-        let boxHeight = fontSize * 1.4
-        let shapeNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: boxWidth, height: boxHeight), cornerRadius: fontSize/3)
-        shapeNode.fillColor = UIColor.blackColor()
-        let labelNode = SKLabelNode(fontNamed:font)
-        labelNode.color = UIColor.whiteColor()
-        labelNode.text = name as String
-        labelNode.fontSize = fontSize
-        labelNode.verticalAlignmentMode = .Bottom
-        labelNode.horizontalAlignmentMode = .Left
-        labelNode.position = CGPoint(x: parent.position.x,
-            y: parent.position.y - CGFloat(parent.children.count) * CGFloat(boxHeight + 2))
-        labelNode.addChild(shapeNode)
-        parent.addChild(labelNode)
-        return labelNode
+    var name: String
+    var callback: (SKNode) -> ()
+    
+    init(_ name: String, _ callback: (SKNode) -> ()) {
+        self.name = name
+        self.callback = callback
     }
     
-    
-    static func add(parent: SKNode, name: String, userdata: Bool) {
-        let labelNode = add(parent, name: name)
-        labelNode.userData = NSMutableDictionary(capacity: 2)
-        let choices = [false, true]
-        labelNode.userData?.setValue(choices, forKey: "choices")
-        labelNode.userData?.setValue(userdata, forKey: "value")
-    }
-   
-    /*
-        Search for any label node below the current that contains given position.
-        return it, or nil if none was found.
-    */
-    static func find(root: SKNode, position: CGPoint) -> SKLabelNode? {
-        if root.hidden {
-            return nil
-        }
-        for (i, c) in enumerate(root.children) {
-            if let child = c as? SKLabelNode {
-                if let shape = child.children[0] as? SKShapeNode {
-                    if shape.containsPoint(position) {
-                        return child
-                    }
-                }
-                if child.children.count == 2 {
-                    if let lower = child.children[1] as? SKNode {
-                        if let result = find(lower, position: position) {
-                            return result
-                        }
-                    }
-                }
-            }
-        }
-        return nil
-    }
     
     static func invert(node: SKLabelNode) {
         if let shape = node.children[0] as? SKShapeNode {
@@ -94,7 +51,67 @@ class Menu {
             node.text = tx + ": " + val.description
         }
     }
+    
 
+}
+
+extension SKNode {
+    
+    func add(name: String) -> SKLabelNode {
+        let nameLen = CGFloat(name.lengthOfBytesUsingEncoding(name.smallestEncoding))
+        println(nameLen)
+        let boxWidth = nameLen * Menu.fontSize * 0.6
+        let boxHeight = Menu.fontSize * 1.4
+        let shapeNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: boxWidth, height: boxHeight), cornerRadius: Menu.fontSize/3)
+        shapeNode.position = CGPoint(x: Menu.fontSize * -0.5, y: Menu.fontSize * -0.2)
+        shapeNode.fillColor = UIColor.blackColor()
+        let labelNode = SKLabelNode(fontNamed:Menu.font)
+        labelNode.color = UIColor.whiteColor()
+        labelNode.text = name as String
+        labelNode.fontSize = Menu.fontSize
+        labelNode.verticalAlignmentMode = .Bottom
+        labelNode.horizontalAlignmentMode = .Left
+        labelNode.position = CGPoint(x: position.x,
+            y: position.y - CGFloat(children.count) * CGFloat(boxHeight * 1.2))
+        labelNode.addChild(shapeNode)
+        addChild(labelNode)
+        return labelNode
+    }
+    
+    
+    func add(menu: Menu) -> SKLabelNode {
+        let labelNode = add(menu.name)
+        labelNode.userData = NSMutableDictionary(capacity: 1)
+        labelNode.userData?.setValue(menu, forKey: "menu")
+        return labelNode
+    }
+    
+    /*
+        Search for any label node below the current that contains given position.
+        return it, or nil if none was found.
+    */
+    func find(position: CGPoint) -> SKLabelNode? {
+        if hidden {
+            return nil
+        }
+        for (i, c) in enumerate(children) {
+            if let child = c as? SKLabelNode {
+                if let shape = child.children[0] as? SKShapeNode {
+                    if shape.containsPoint(position) {
+                        return child
+                    }
+                }
+                if child.children.count == 2 {
+                    if let lower = child.children[1] as? SKNode {
+                        if let result = lower.find(position) {
+                            return result
+                        }
+                    }
+                }
+            }
+        }
+        return nil
+    }
     
     /*
     > foo
