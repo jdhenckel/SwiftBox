@@ -15,9 +15,9 @@
 		520B03771B5B5B5C002527C8 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 520B03751B5B5B5C002527C8 /* LaunchScreen.xib */; };
 		520B03831B5B5B5C002527C8 /* SwiftBoxTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 520B03821B5B5B5C002527C8 /* SwiftBoxTests.swift */; };
 		520B038D1B5B5CA3002527C8 /* wood.png in Resources */ = {isa = PBXBuildFile; fileRef = 520B038C1B5B5CA3002527C8 /* wood.png */; };
-		522F215F1B67385B00244510 /* Touch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F215E1B67385B00244510 /* Touch.swift */; };
 		522F21611B67437B00244510 /* Math.swift in Sources */ = {isa = PBXBuildFile; fileRef = 522F21601B67437B00244510 /* Math.swift */; };
-		52F965291B654E3F00614CC0 /* Body.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52F965281B654E3F00614CC0 /* Body.swift */; };
+		52CCF4831B77B242006ABADE /* TouchClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CCF4821B77B242006ABADE /* TouchClient.swift */; };
+		52CCF4871B7802B3006ABADE /* TouchCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52CCF4861B7802B3006ABADE /* TouchCollector.swift */; };
 		BCA2793F1B70256900964A78 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BCA2793E1B70256900964A78 /* Menu.swift */; };
 /* End PBXBuildFile section */
 
@@ -44,9 +44,9 @@
 		520B03811B5B5B5C002527C8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		520B03821B5B5B5C002527C8 /* SwiftBoxTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwiftBoxTests.swift; sourceTree = "<group>"; };
 		520B038C1B5B5CA3002527C8 /* wood.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = wood.png; sourceTree = "<group>"; };
-		522F215E1B67385B00244510 /* Touch.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Touch.swift; sourceTree = "<group>"; };
 		522F21601B67437B00244510 /* Math.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Math.swift; sourceTree = "<group>"; };
-		52F965281B654E3F00614CC0 /* Body.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Body.swift; sourceTree = "<group>"; };
+		52CCF4821B77B242006ABADE /* TouchClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchClient.swift; sourceTree = "<group>"; };
+		52CCF4861B7802B3006ABADE /* TouchCollector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchCollector.swift; sourceTree = "<group>"; };
 		BCA2793E1B70256900964A78 /* Menu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -97,10 +97,10 @@
 				520B03731B5B5B5C002527C8 /* Images.xcassets */,
 				520B03751B5B5B5C002527C8 /* LaunchScreen.xib */,
 				520B03661B5B5B5B002527C8 /* Supporting Files */,
-				52F965281B654E3F00614CC0 /* Body.swift */,
-				522F215E1B67385B00244510 /* Touch.swift */,
 				522F21601B67437B00244510 /* Math.swift */,
 				BCA2793E1B70256900964A78 /* Menu.swift */,
+				52CCF4821B77B242006ABADE /* TouchClient.swift */,
+				52CCF4861B7802B3006ABADE /* TouchCollector.swift */,
 			);
 			path = SwiftBox;
 			sourceTree = "<group>";
@@ -236,8 +236,8 @@
 				520B036F1B5B5B5C002527C8 /* GameViewController.swift in Sources */,
 				BCA2793F1B70256900964A78 /* Menu.swift in Sources */,
 				520B03691B5B5B5C002527C8 /* AppDelegate.swift in Sources */,
-				522F215F1B67385B00244510 /* Touch.swift in Sources */,
-				52F965291B654E3F00614CC0 /* Body.swift in Sources */,
+				52CCF4871B7802B3006ABADE /* TouchCollector.swift in Sources */,
+				52CCF4831B77B242006ABADE /* TouchClient.swift in Sources */,
 				522F21611B67437B00244510 /* Math.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

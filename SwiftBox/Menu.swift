@@ -31,12 +31,14 @@ class Menu {
     }
     
     
-    static func invert(node: SKLabelNode) {
-        if let shape = node.children[0] as? SKShapeNode {
-            let temp = shape.fillColor
-            if let color = node.color {
-                shape.fillColor = color
-                node.color = temp
+    static func invert(node: SKLabelNode?) {
+        if let labelNode = node  {
+            if let shape = labelNode.children[0] as? SKShapeNode {
+                let temp = shape.fillColor
+                if let color = labelNode.color {
+                    shape.fillColor = color
+                    labelNode.color = temp
+                }
             }
         }
     }
@@ -59,7 +61,6 @@ extension SKNode {
     
     func add(name: String) -> SKLabelNode {
         let nameLen = CGFloat(name.lengthOfBytesUsingEncoding(name.smallestEncoding))
-        println(nameLen)
         let boxWidth = nameLen * Menu.fontSize * 0.6
         let boxHeight = Menu.fontSize * 1.4
         let shapeNode = SKShapeNode(rect: CGRect(x: 0, y: 0, width: boxWidth, height: boxHeight), cornerRadius: Menu.fontSize/3)
@@ -84,82 +85,6 @@ extension SKNode {
         labelNode.userData = NSMutableDictionary(capacity: 1)
         labelNode.userData?.setValue(menu, forKey: "menu")
         return labelNode
-    }
-    
-    /*
-        Search for any label node below the current that contains given position.
-        return it, or nil if none was found.
-    */
-    func find(position: CGPoint) -> SKLabelNode? {
-        if hidden {
-            return nil
-        }
-        for (i, c) in enumerate(children) {
-            if let child = c as? SKLabelNode {
-                if let shape = child.children[0] as? SKShapeNode {
-                    if shape.containsPoint(position) {
-                        return child
-                    }
-                }
-                if child.children.count == 2 {
-                    if let lower = child.children[1] as? SKNode {
-                        if let result = lower.find(position) {
-                            return result
-                        }
-                    }
-                }
-            }
-        }
-        return nil
-    }
-    
-    /*
-    > foo
-    V bar
-       > tic
-       > toc
-       V baz rop
-
-    setcallback();
-    addmenu(null, 'name', myFloat, lo, hi)
-    addmenu(null, 'name', myNode (menu))
-    addmenu(null, 'name', myInt, lo, hi)
-    addmenu(null, 'name', myBool)
-    addmenu(null, 'name', myArray of strings)
-    
-    
-    how to detect datatype
-    
-node(hid)    TOP NODE
-  0.label -> 0.shape
-  node (hid)
-    0.label -> 0.shape ... userdata = float / int / bool / stringlist
-    1.label -> 0.shape
-    2.label -> 0.shape
-        1.node (hidden)
-            0.label -> 0.shape
-            1.label -> 0.shape
-    
-    
-    types of commands
-    set gravity
-    pause
-    new ball
-    new box
-    new polyline
-    new joint
-    delete
-    set motor properties
-    save file
-    load file
-    
-    node = addMenu(node, "title")
-    
-    onclick: switch(title)
-    
-    */
-    //var itemList: [Item] = []
-    
-    
+    }    
 }
 
