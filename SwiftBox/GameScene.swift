@@ -68,13 +68,20 @@ class GameScene: SKScene {
 
         //------------
         // menu
+
+        menuNode.add("pause")
+        let m1 = menuNode.add("grav").addSubmenu()
+        m1.add("tilt")
+        m1.add("mutual")
+        m1.add("down")
+        let m2 = menuNode.add("edit").addSubmenu()
+        let m3 = m2.add("add").addSubmenu()
+        m2.add("del")
+        m2.add("paint")
+        m3.add("ball")
+        m3.add("box")
+        m3.add("joint")
         
-        menuNode.add(Menu("first menu", { (x:SKNode) in println("test") }))
-        
-        menuNode.add("test2")
-        menuNode.add("a test3")
-        menuNode.add("this is a very long title to see how crazy it can be.")
-    
         dumpNodes()
 
         // Create the touch collector. This is a utility to manage all the touches and

@@ -47,17 +47,24 @@ class TouchClient {
     func beginFirstTouch(tc: TouchCollector) {
         let tap = tc.touches[0].tapCount
         print("*begin touch \(tap) ")
-        if let menuRoot = scene.children[1] as? SKNode {
-            let menuPos = tc.touches[0].locationInNode(menuRoot)
-            let hits = menuRoot.nodesAtPoint(menuPos)
-            for hit in hits {
-                if let node = hit as? SKLabelNode {
-                    println("menu \(node.text)")
-                    target = node
-                    return
-                }
-            }
-        }
+        
+        // TODO - do not set menu target until END
+        
+//        if let menuRoot = scene.children[1] as? SKNode {
+//            let menuPos = tc.touches[0].locationInNode(menuRoot)
+//            let hits = menuRoot.nodesAtPoint(menuPos)
+//            for hit in hits {
+//                if let node = hit as? SKLabelNode {
+//                    println("menu \(node.text)")
+//                    target = node
+//                    return
+//                }
+//            }
+//        }
+        
+        // TODO - if target not null, then send all movements to it's callback
+        // (and do not change target below)
+        
         if let worldRoot = scene.children[0] as? SKNode {
             let worldPos = tc.touches[0].locationInNode(worldRoot)
             let hits = worldRoot.nodesAtPoint(worldPos)
@@ -84,6 +91,20 @@ class TouchClient {
         }
         else if let label = target as? SKLabelNode {
             println("menu \(label.text)")
+            // if touch moves off the button, cancel the action
+//            if let shape = label.children[1] as? SKNode {
+//                let pos = tc.touches[0].locationInNode(label)
+//                if !shape.containsPoint(pos) {
+//                    tc.clear()
+//                    return
+//                }
+//                // If two touches, pass the movement of the second to the callback
+//                if tc.touches.count > 1 && tc.touches[1].phase == .Moved {
+//                    label.invokeCallback(tc.touches[1])
+//                }
+//            }
+            
+            // TODO - invoke the callback
         }
         else if let node = target {
             println("body \(node.dynamicType)")
@@ -103,6 +124,7 @@ class TouchClient {
         }
         else if let label = target as? SKLabelNode {
             println("menu \(label.text)")
+            label.invokeCallback(tc.touches[0])
         }
         else if let node = target {
             println("body \(node.dynamicType)")

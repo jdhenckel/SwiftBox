@@ -22,41 +22,94 @@ class Menu {
     static let font = "ChalkboardSE-Regular"
     static let fontSize = 14 as CGFloat
     
+    /*
+    Note: the first parameter to callback is the label node.  The second parameter is the
+    recent movement of the second touch, or nil if the first touch is ending.
+    */
     var name: String
-    var callback: (SKNode) -> ()
+    var callback: (SKNode, UITouch) -> ()
     
-    init(_ name: String, _ callback: (SKNode) -> ()) {
+    init(_ name: String, _ callback: (SKNode, UITouch) -> ()) {
         self.name = name
         self.callback = callback
-    }
-    
-    
-    static func invert(node: SKLabelNode?) {
-        if let labelNode = node  {
-            if let shape = labelNode.children[0] as? SKShapeNode {
-                let temp = shape.fillColor
-                if let color = labelNode.color {
-                    shape.fillColor = color
-                    labelNode.color = temp
-                }
-            }
-        }
-    }
-    
-    static func appendValue(node: SKLabelNode) {
-        var tx = node.text
-        let pair = tx.componentsSeparatedByString(":")
-        if pair.count == 2 {
-            tx = pair[0]
-        }
-        if let val: AnyObject = node.userData?.valueForKey("value") {
-            node.text = tx + ": " + val.description
-        }
     }
     
 
 }
 
+extension SKLabelNode {
+    
+    func invert() {
+        if let shape = children[1] as? SKShapeNode {
+            let temp = shape.fillColor
+            if let mycolor = color {
+                shape.fillColor = mycolor
+                color = temp
+            }
+        }
+    }
+    
+    func invokeCallback(touch: UITouch) {
+        if let menu = userData?.valueForKey("menu") as? Menu {
+            menu.callback(self, touch)
+        }
+        else {
+            
+            if children.count > 2 {
+                // toggle hidden submenu
+                // hide siblings
+            }
+        }
+    }
+
+    
+    func addSubmenu() -> SKNode {
+        let sub = SKNode()
+        sub.hidden = true
+        addChild(sub)
+        return sub
+    }
+
+    // Expand (unhide) the submenu of self (and hide menus of all siblings)
+    func expand() {
+        if let p = parent {
+            for n in p.children {
+                if let label = n as? SKLabelNode {
+                    label.showSubmenu(label === self)
+                }
+            }
+        }
+    }
+    
+    // Contract the submenu (set hidden = true)
+    func showSubmenu(val: Bool) {
+        if children.count == 3 {
+            if let root = children[2] as? SKNode {
+                root.hidden = val
+            }
+        }
+    }
+
+    
+    func prefix() -> String {
+        let pair = text.componentsSeparatedByString(":")
+        if pair.count == 2 {
+            return pair[0]
+        }
+        return text
+    }
+    
+    
+    func appendValue(value: String) {
+        text = prefix() + ": " + value
+    }
+    
+    
+}
+
+/*
+These extensions are so you can make menus. The root of the menu is a regular SKNode
+*/
 extension SKNode {
     
     func add(name: String) -> SKLabelNode {
@@ -85,6 +138,7 @@ extension SKNode {
         labelNode.userData = NSMutableDictionary(capacity: 1)
         labelNode.userData?.setValue(menu, forKey: "menu")
         return labelNode
-    }    
+    }
+    
 }
 
