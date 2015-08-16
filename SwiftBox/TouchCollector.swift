@@ -89,11 +89,11 @@ class TouchCollector {
         if flags & BeginFlag != 0 {
             client.beginFirstTouch(self)
         }
-        if flags & ChangeFlag != 0 {
-            client.changeTouch(self)
-        }
         if flags & EndFlag != 0 {
             client.endFirstTouch(self)
+        }
+        else if flags & ChangeFlag != 0 {
+            client.changeTouch(self)
         }
         flags = 0
         removeAllDead()

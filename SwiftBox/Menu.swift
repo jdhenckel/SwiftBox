@@ -26,13 +26,13 @@ class Menu {
     Note: the first parameter to callback is the label node.  The second parameter is the
     recent movement of the second touch, or nil if the first touch is ending.
     */
-    var name: String
-    var callback: (SKNode, UITouch) -> ()
-    
-    init(_ name: String, _ callback: (SKNode, UITouch) -> ()) {
-        self.name = name
-        self.callback = callback
-    }
+//    var name: String
+//    var callback: (SKNode, UITouch) -> ()
+//    
+//    init(_ name: String, _ callback: (SKNode, UITouch) -> ()) {
+//        self.name = name
+//        self.callback = callback
+//    }
     
 
 }
@@ -49,18 +49,18 @@ extension SKLabelNode {
         }
     }
     
-    func invokeCallback(touch: UITouch) {
-        if let menu = userData?.valueForKey("menu") as? Menu {
-            menu.callback(self, touch)
-        }
-        else {
-            
-            if children.count > 2 {
-                // toggle hidden submenu
-                // hide siblings
-            }
-        }
-    }
+//    func invokeCallback(touch: UITouch) {
+//        if let menu = userData?.valueForKey("menu") as? Menu {
+//            menu.callback(self, touch)
+//        }
+//        else {
+//            
+//            if children.count > 2 {
+//                // toggle hidden submenu
+//                // hide siblings
+//            }
+//        }
+//    }
 
     
     func addSubmenu() -> SKNode {
@@ -133,12 +133,12 @@ extension SKNode {
     }
     
     
-    func add(menu: Menu) -> SKLabelNode {
-        let labelNode = add(menu.name)
-        labelNode.userData = NSMutableDictionary(capacity: 1)
-        labelNode.userData?.setValue(menu, forKey: "menu")
-        return labelNode
-    }
+//    func add(menu: Menu) -> SKLabelNode {
+//        let labelNode = add(menu.name)
+//        labelNode.userData = NSMutableDictionary(capacity: 1)
+//        labelNode.userData?.setValue(menu, forKey: "menu")
+//        return labelNode
+//    }
     
 }
 

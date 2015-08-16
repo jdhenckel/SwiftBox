@@ -88,7 +88,7 @@ class GameScene: SKScene {
         // send high level event indicators to the touch client.
         // The touch client performs actions based on the touches.
         
-        touchCollector = TouchCollector(TouchClient(self))
+        touchCollector = TouchCollector(TouchClient(menu: menuNode, world: worldNode))
         
     }
     

@@ -10,12 +10,22 @@ import SpriteKit
 
 class TouchClient {
 
-    var scene: SKScene
+//    var scene: SKScene
+    let menuRoot: SKNode
+    let worldRoot: SKNode
     var target: SKNode?
+    var mode: String
+    var sticky: Bool
+    let HOME = "home"
+    let NAV = "nav"
+    let DRAG = "drag"
     
-    init(_ scene: SKScene) {
-        self.scene = scene
+    init(menu: SKNode, world: SKNode) {
+        menuRoot = menu
+        worldRoot = world
         target = nil
+        mode = HOME
+        sticky = false
     }
 
     /*  
@@ -46,71 +56,80 @@ class TouchClient {
     */
     func beginFirstTouch(tc: TouchCollector) {
         let tap = tc.touches[0].tapCount
-        print("*begin touch \(tap) ")
+        print("*begin touch \(tap) \(mode) ")
         
-        // TODO - do not set menu target until END
-        
-//        if let menuRoot = scene.children[1] as? SKNode {
-//            let menuPos = tc.touches[0].locationInNode(menuRoot)
-//            let hits = menuRoot.nodesAtPoint(menuPos)
-//            for hit in hits {
-//                if let node = hit as? SKLabelNode {
-//                    println("menu \(node.text)")
-//                    target = node
-//                    return
-//                }
-//            }
-//        }
-        
-        // TODO - if target not null, then send all movements to it's callback
-        // (and do not change target below)
-        
-        if let worldRoot = scene.children[0] as? SKNode {
-            let worldPos = tc.touches[0].locationInNode(worldRoot)
-            let hits = worldRoot.nodesAtPoint(worldPos)
-            for hit in hits {
-                if let node = hit as? SKNode {
-                    println("body \(node.dynamicType)")
-                    target = node
+        if mode == HOME {
+            for hit in menuRoot.nodesAtPoint(tc.touches[0].locationInNode(menuRoot)) {
+                if let node = hit as? SKLabelNode {
+                    println("menu \(node.text)")
+                    setTargetMenu(node)
+                    mode = NAV
+                    // TODO - double tap for sticky? or long tap?
                     return
                 }
             }
         }
+
+        mode = DRAG
+        for hit in worldRoot.nodesAtPoint(tc.touches[0].locationInNode(worldRoot)) {
+            // TODO - sort by z order?
+            if let node = hit as? SKNode {
+                println("body \(node.dynamicType)")
+                target = node
+                return
+            }
+        }
+        target = nil
         println("nil")
     }
+    
+    
+    private func setTargetMenu(t: SKNode?) {
+        if target === t { return }
+        if let prevNode = target as? SKLabelNode {
+            prevNode.invert()
+        }
+        if let newNode = t as? SKLabelNode {
+            newNode.invert()
+        }
+        target = t
+    }
+    
 
     /*
-    This is called when something changes (other than begin or end). For instance if a 
+    This is called when something changes (other than begin or end). For instance if a
     touch is moved, or another touch is added, or a touch (not the 0th) is removed.
     When the 0th touch is removed, this function is NOT called. The 'end' is called instead.
     */
     func changeTouch(tc: TouchCollector) {
-        print("change touch \(tc.touches.count) ")
-        if target == nil {
-            println("nil")
+        
+        if (mode == NAV) {
+            for hit in menuRoot.nodesAtPoint(tc.touches[0].locationInNode(menuRoot)) {
+                if let node = hit as? SKLabelNode {
+                    if target !== node { println("change menu \(node.text)") }
+                    setTargetMenu(node)
+                    return
+                }
+            }
+            if target != nil { println("change menu nil") }
+            setTargetMenu(nil)
+            return
         }
-        else if let label = target as? SKLabelNode {
-            println("menu \(label.text)")
-            // if touch moves off the button, cancel the action
-//            if let shape = label.children[1] as? SKNode {
-//                let pos = tc.touches[0].locationInNode(label)
-//                if !shape.containsPoint(pos) {
-//                    tc.clear()
-//                    return
-//                }
-//                // If two touches, pass the movement of the second to the callback
-//                if tc.touches.count > 1 && tc.touches[1].phase == .Moved {
-//                    label.invokeCallback(tc.touches[1])
-//                }
-//            }
+        else if mode == DRAG {
+
+            print("change touch \(tc.touches.count) mode=\(mode) ")
+
             
-            // TODO - invoke the callback
-        }
-        else if let node = target {
-            println("body \(node.dynamicType)")
-        }
-        else {
-            println("unknown?!?")
+            
+            if target == nil {
+                println("nil")
+            }
+            else if let node = target {
+                println("body \(node.dynamicType)")
+            }
+            else {
+                println("unknown?!?")
+            }
         }
     }
     
@@ -118,13 +137,13 @@ class TouchClient {
     This is called when the main touch, the 0th touch, is about to end.
     */
     func endFirstTouch(tc: TouchCollector) {
-        print("** end touch ")
-        if target == nil {
-            println("nil")
-        }
-        else if let label = target as? SKLabelNode {
-            println("menu \(label.text)")
-            label.invokeCallback(tc.touches[0])
+        print("** end touch \(mode) ")
+        if mode == NAV {
+            if let label = target as? SKLabelNode {
+                mode = label.text
+                println(" => \(label.text)")
+                return
+            }
         }
         else if let node = target {
             println("body \(node.dynamicType)")
@@ -134,6 +153,7 @@ class TouchClient {
         }
         tc.clear()
         target = nil
+        mode = HOME
     }
 
 
