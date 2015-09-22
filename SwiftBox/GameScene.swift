@@ -28,7 +28,11 @@ class GameScene: SKScene {
         worldNode.position = CGPoint(x: frame.midX, y: frame.midY)
 
         let menuNode = SKNode()
-        menuNode.position = CGPoint(x: Menu.fontSize / 2, y: frame.height / 2 - Menu.fontSize * 1.2)
+        menuNode.position = CGPoint(x: 0, y: frame.height)
+        
+        
+        
+        // Menu.fontSize / 2, y: frame.height / 2 - Menu.fontSize * 1.2)
 
         addChild(worldNode)   // child 0 of the scene is always the WORLD
         addChild(menuNode)    // child 1 of the scene is always the MENU
@@ -68,19 +72,29 @@ class GameScene: SKScene {
 
         //------------
         // menu
-
-        menuNode.add("pause")
-        let m1 = menuNode.add("grav").addSubmenu()
-        m1.add("tilt")
-        m1.add("mutual")
-        m1.add("down")
-        let m2 = menuNode.add("edit").addSubmenu()
-        let m3 = m2.add("add").addSubmenu()
-        m2.add("del")
-        m2.add("paint")
-        m3.add("ball")
-        m3.add("box")
-        m3.add("joint")
+        
+        menuNode.position += CGPoint(x:5-Menu.width, y:-20-Menu.height)
+        
+        menuNode.addList([
+            "pause",
+            "grav", ["tilt","mutual","down"],
+            "edit", [
+                "add", ["ball", "box", "joint"],
+                "del",
+                "paint"],
+            ])
+        
+        //-------------------
+        // prompt
+        
+        let promptNode = SKLabelNode(fontNamed:Menu.font)
+        promptNode.color = UIColor.whiteColor()
+        promptNode.text = "Welcome"
+        promptNode.fontSize = Menu.fontSize / 2
+        promptNode.verticalAlignmentMode = .Top
+        promptNode.horizontalAlignmentMode = .Center
+        promptNode.position = CGPoint(x: frame.midX, y: frame.height - 20)
+        addChild(promptNode)
         
         dumpNodes()
 
@@ -88,7 +102,7 @@ class GameScene: SKScene {
         // send high level event indicators to the touch client.
         // The touch client performs actions based on the touches.
         
-        touchCollector = TouchCollector(TouchClient(menu: menuNode, world: worldNode))
+        touchCollector = TouchCollector(TouchClient(menu: menuNode, world: worldNode, prompt: promptNode))
         
     }
     
@@ -100,7 +114,7 @@ class GameScene: SKScene {
     
     func dumpNode(node: SKNode?, _ prefix: String) {
         if let nn = node {
-            println(prefix + "\(nn.dynamicType) nc=\(nn.children.count) pos=\(nn.position)")
+            println(prefix + "\(nn.dynamicType) nc=\(nn.children.count) hid=\(nn.hidden)")
             for xx in nn.children {
                 dumpNode(xx as? SKNode, prefix + " _ ")
             }
@@ -191,6 +205,7 @@ class GameScene: SKScene {
                 touchCollector.end(touch)
             }
         }
+        // dumpNodes()
     }
     
     override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {

@@ -13,17 +13,23 @@ class TouchClient {
 //    var scene: SKScene
     let menuRoot: SKNode
     let worldRoot: SKNode
-    var target: SKNode?
+    let prompt: SKLabelNode
+    var targetBody: SKNode?
+    var targetMenu: SKLabelNode?
     var mode: String
     var sticky: Bool
+    
+    // Mode constants
     let HOME = "home"
     let NAV = "nav"
     let DRAG = "drag"
     
-    init(menu: SKNode, world: SKNode) {
+    init(menu: SKNode, world: SKNode, prompt: SKLabelNode) {
         menuRoot = menu
         worldRoot = world
-        target = nil
+        self.prompt = prompt
+        targetMenu = nil
+        targetBody = nil
         mode = HOME
         sticky = false
     }
@@ -33,19 +39,21 @@ class TouchClient {
     period of time. 
     */
     func longTouch(tc: TouchCollector) {
-        print("@ long touch ")
-        if target == nil {
-            println("nil")
+        print("@ long touch \(mode) ")
+        
+        if mode == NAV {
+            println("menu \(targetMenu!.text)")
         }
-        else if let label = target as? SKLabelNode {
-            println("menu \(label.text)")
+        else if mode == DRAG {
+            println("body \(targetBody!.dynamicType)")
         }
-        else if let node = target {
-            println("body \(node.dynamicType)")
+        else if mode == "box" {
+            println()
         }
         else {
-            println("unknown?!?")
+            println()
         }
+        
     }
     
     /*
@@ -59,40 +67,28 @@ class TouchClient {
         print("*begin touch \(tap) \(mode) ")
         
         if mode == HOME {
-            for hit in menuRoot.nodesAtPoint(tc.touches[0].locationInNode(menuRoot)) {
-                if let node = hit as? SKLabelNode {
-                    println("menu \(node.text)")
-                    setTargetMenu(node)
-                    mode = NAV
-                    // TODO - double tap for sticky? or long tap?
-                    return
-                }
-            }
-        }
-
-        mode = DRAG
-        for hit in worldRoot.nodesAtPoint(tc.touches[0].locationInNode(worldRoot)) {
-            // TODO - sort by z order?
-            if let node = hit as? SKNode {
-                println("body \(node.dynamicType)")
-                target = node
+            if let node = findMenu(tc.touches[0]) {
+                setTargetMenu(node)
+                mode = NAV
+                // TODO - double tap for sticky? or long tap?
                 return
             }
+            mode = DRAG
+            if let node = findBody(tc.touches[0]) {
+                targetBody = node
+                return
+            }
+            targetBody = nil
+            targetMenu = nil
+            println("nil")
         }
-        target = nil
-        println("nil")
-    }
-    
-    
-    private func setTargetMenu(t: SKNode?) {
-        if target === t { return }
-        if let prevNode = target as? SKLabelNode {
-            prevNode.invert()
+        else if mode == DRAG || mode == NAV {
+            println("this should never happen ??!!?")
         }
-        if let newNode = t as? SKLabelNode {
-            newNode.invert()
+        else if mode == "box" {
+            // TODO -- create a box
+            println("create a box")
         }
-        target = t
     }
     
 
@@ -103,16 +99,14 @@ class TouchClient {
     */
     func changeTouch(tc: TouchCollector) {
         
-        if (mode == NAV) {
-            for hit in menuRoot.nodesAtPoint(tc.touches[0].locationInNode(menuRoot)) {
-                if let node = hit as? SKLabelNode {
-                    if target !== node { println("change menu \(node.text)") }
-                    setTargetMenu(node)
-                    return
-                }
+        if mode == NAV {
+            print("change menu ")
+            if let node = findMenu(tc.touches[0]) {
+                setTargetMenu(node)
+                return
             }
-            if target != nil { println("change menu nil") }
-            setTargetMenu(nil)
+            println("nil")
+            targetMenu!.brighten(false)
             return
         }
         else if mode == DRAG {
@@ -121,40 +115,89 @@ class TouchClient {
 
             
             
-            if target == nil {
+            if targetBody == nil {
                 println("nil")
             }
-            else if let node = target {
+            else if let node = targetBody {
                 println("body \(node.dynamicType)")
             }
             else {
                 println("unknown?!?")
             }
         }
+        else {
+            println("change touch unhandled mode \(mode)")
+        }
     }
     
     /*
-    This is called when the main touch, the 0th touch, is about to end.
+    This is called when the main touch, the 0th touch, is ending.
     */
     func endFirstTouch(tc: TouchCollector) {
         print("** end touch \(mode) ")
         if mode == NAV {
-            if let label = target as? SKLabelNode {
+            if let label = targetMenu {
                 mode = label.text
                 println(" => \(label.text)")
+                menuRoot.setTreeHidden()
+                prompt.text = "Mode: " + mode
+                prompt.setHide(false)
                 return
             }
+            println(" => nil")
         }
-        else if let node = target {
+        else if let node = targetBody {
             println("body \(node.dynamicType)")
         }
         else {
-            println("unknown?!?")
+            println("nil")
         }
         tc.clear()
-        target = nil
+        targetMenu = nil
         mode = HOME
+        menuRoot.setTreeHidden()
+        prompt.setHide(true)
     }
-
+    
+    
+    private func findBody(touch: UITouch) -> SKNode? {
+        let pos = touch.locationInNode(worldRoot)
+        for hit in worldRoot.nodesAtPoint(pos) {
+            // TODO - sort by z order?
+            if let node = hit as? SKNode {
+                println("found body \(node.dynamicType)")
+                return node
+            }
+        }
+        return nil
+    }
+    
+    private func findMenu(touch: UITouch) -> SKLabelNode? {
+        let pos = touch.locationInNode(menuRoot)
+        for hit in menuRoot.nodesAtPoint(pos) {
+            if let shape = hit as? SKShapeNode {
+                if !shape.hidden || shape.parent?.parent == menuRoot {
+                    if let node = shape.parent as? SKLabelNode {
+                        println("found menu \(node.text)")
+                        return node
+                    }
+                }
+            }
+        }
+        return nil
+    }
+    
+    
+    private func setTargetMenu(t: SKLabelNode?) {
+        if targetMenu === t { return }
+        menuRoot.setTreeHidden()
+        targetMenu = t
+        if let newTarget = t {
+            newTarget.setLineageVisible()
+            newTarget.brighten()
+        }
+    }
+        
+    
 
 }
