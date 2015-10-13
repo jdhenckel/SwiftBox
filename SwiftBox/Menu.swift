@@ -10,7 +10,7 @@ import SpriteKit
 
 
 // The menu is a tree of label nodes, child[0] of each is a shape node.
-// and child[1] is a node with a list of descendants
+// and child[1] is a node with a list of descendants, 123
 
 // Pretty good fonts (iosfonts.com)
 // *ArialMT, **ChalkboardSE-Regular, *DevanagariSangamMN, *Kailasa, *Palatino-Roman, **Verdana, Zapfino
