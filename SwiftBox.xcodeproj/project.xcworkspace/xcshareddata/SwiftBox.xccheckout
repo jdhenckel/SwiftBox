@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>91C5AEED-2CF4-428F-87DE-2A91E6227ABA</string>
+	<key>IDESourceControlProjectName</key>
+	<string>SwiftBox</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>F9BE23732774A661E25A03905058734803B5A754</key>
+		<string>https://github.com/jdhenckel/SwiftBox.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>SwiftBox.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>F9BE23732774A661E25A03905058734803B5A754</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/jdhenckel/SwiftBox.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>F9BE23732774A661E25A03905058734803B5A754</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>F9BE23732774A661E25A03905058734803B5A754</string>
+			<key>IDESourceControlWCCName</key>
+			<string>SwiftBox</string>
+		</dict>
+	</array>
+</dict>
+</plist>

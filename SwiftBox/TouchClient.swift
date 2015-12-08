@@ -39,19 +39,19 @@ class TouchClient {
     period of time. 
     */
     func longTouch(tc: TouchCollector) {
-        print("@ long touch \(mode) ")
+        print("@ long touch \(mode) ", terminator: "")
         
         if mode == NAV {
-            println("menu \(targetMenu!.text)")
+            print("menu \(targetMenu!.text)")
         }
         else if mode == DRAG {
-            println("body \(targetBody!.dynamicType)")
+            print("body \(targetBody!.dynamicType)")
         }
         else if mode == "box" {
-            println()
+            print("")
         }
         else {
-            println()
+            print("")
         }
         
     }
@@ -64,7 +64,7 @@ class TouchClient {
     */
     func beginFirstTouch(tc: TouchCollector) {
         let tap = tc.touches[0].tapCount
-        print("*begin touch \(tap) \(mode) ")
+        print("*begin touch \(tap) \(mode) ", terminator: "")
         
         if mode == HOME {
             if let node = findMenu(tc.touches[0]) {
@@ -80,14 +80,14 @@ class TouchClient {
             }
             targetBody = nil
             targetMenu = nil
-            println("nil")
+            print("nil")
         }
         else if mode == DRAG || mode == NAV {
-            println("this should never happen ??!!?")
+            print("this should never happen ??!!?")
         }
         else if mode == "box" {
             // TODO -- create a box
-            println("create a box")
+            print("create a box")
         }
     }
     
@@ -100,33 +100,33 @@ class TouchClient {
     func changeTouch(tc: TouchCollector) {
         
         if mode == NAV {
-            print("change menu ")
+            print("change menu ", terminator: "")
             if let node = findMenu(tc.touches[0]) {
                 setTargetMenu(node)
                 return
             }
-            println("nil")
+            print("nil")
             targetMenu!.brighten(false)
             return
         }
         else if mode == DRAG {
 
-            print("change touch \(tc.touches.count) mode=\(mode) ")
+            print("change touch \(tc.touches.count) mode=\(mode) ", terminator: "")
 
             
             
             if targetBody == nil {
-                println("nil")
+                print("nil")
             }
             else if let node = targetBody {
-                println("body \(node.dynamicType)")
+                print("body \(node.dynamicType)")
             }
             else {
-                println("unknown?!?")
+                print("unknown?!?")
             }
         }
         else {
-            println("change touch unhandled mode \(mode)")
+            print("change touch unhandled mode \(mode)")
         }
     }
     
@@ -134,23 +134,23 @@ class TouchClient {
     This is called when the main touch, the 0th touch, is ending.
     */
     func endFirstTouch(tc: TouchCollector) {
-        print("** end touch \(mode) ")
+        print("** end touch \(mode) ", terminator: "")
         if mode == NAV {
             if let label = targetMenu {
-                mode = label.text
-                println(" => \(label.text)")
+                mode = label.text!
+                print(" => \(label.text)")
                 menuRoot.setTreeHidden()
                 prompt.text = "Mode: " + mode
                 prompt.setHide(false)
                 return
             }
-            println(" => nil")
+            print(" => nil")
         }
         else if let node = targetBody {
-            println("body \(node.dynamicType)")
+            print("body \(node.dynamicType)")
         }
         else {
-            println("nil")
+            print("nil")
         }
         tc.clear()
         targetMenu = nil
@@ -162,12 +162,9 @@ class TouchClient {
     
     private func findBody(touch: UITouch) -> SKNode? {
         let pos = touch.locationInNode(worldRoot)
-        for hit in worldRoot.nodesAtPoint(pos) {
-            // TODO - sort by z order?
-            if let node = hit as? SKNode {
-                println("found body \(node.dynamicType)")
-                return node
-            }
+        for node in worldRoot.nodesAtPoint(pos) {
+            print("found body \(node.dynamicType)")
+            return node
         }
         return nil
     }
@@ -178,7 +175,7 @@ class TouchClient {
             if let shape = hit as? SKShapeNode {
                 if !shape.hidden || shape.parent?.parent == menuRoot {
                     if let node = shape.parent as? SKLabelNode {
-                        println("found menu \(node.text)")
+                        print("found menu \(node.text)")
                         return node
                     }
                 }

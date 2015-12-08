@@ -28,13 +28,16 @@ class Menu {
 
 extension SKLabelNode {
     
-    func brighten(_ val: Bool = true) {
-        if let shape = children[1] as? SKShapeNode {
-            shape.fillColor = val ? UIColor.blueColor() : UIColor.blackColor()
-            shape.strokeColor = val ? UIColor.yellowColor() : UIColor.grayColor()
-        }
-    }
     
+    
+    
+    func prefix() -> String {
+        let pair = text!.componentsSeparatedByString(":")
+        if pair.count == 2 {
+            return pair[0]
+        }
+        return text!
+    }
     
     func addSubmenu() -> SKNode {
         let sub = SKNode()
@@ -43,14 +46,13 @@ extension SKLabelNode {
         return sub
     }
     
-    func prefix() -> String {
-        let pair = text.componentsSeparatedByString(":")
-        if pair.count == 2 {
-            return pair[0]
+
+    func brighten(valx: Bool = true) {
+        if let shape = children[1] as? SKShapeNode {
+            shape.fillColor = valx ? UIColor.blueColor() : UIColor.blackColor()
+            shape.strokeColor = valx ? UIColor.yellowColor() : UIColor.grayColor()
         }
-        return text
     }
-    
     
     func appendValue(value: String) {
         text = prefix() + ": " + value
@@ -61,14 +63,10 @@ extension SKLabelNode {
     {
         hidden = val
         if children.count > 0 {
-            if let node = children[0] as? SKNode {
-                node.hidden = val
-            }
+            children[0].hidden = val
         }
         if children.count > 1 {
-            if let node = children[1] as? SKNode {
-                node.hidden = val
-            }
+            children[1].hidden = val
         }
     }
 
@@ -76,16 +74,13 @@ extension SKLabelNode {
     func setLineageVisible() {
         setHide(false)
         if children.count == 3 {
-            if let d = children[2] as? SKNode {
-                d.setSubmenuVisible()
-            }
+            children[2].setSubmenuVisible()
         }
 
-        if var next = self.children[0] as? SKNode {
-            while let node = next.parent?.parent {
-                node.setSubmenuVisible()
-                next = node
-            }
+        var next = self.children[0]
+        while let node = next.parent?.parent {
+            node.setSubmenuVisible()
+            next = node
         }
     }
 }
@@ -136,12 +131,10 @@ extension SKNode {
     // Hide the entire tree of nodes (and set labels.brighten = false)
     func setTreeHidden() {
         hidden = true
-        for n in children {
-            if let node = n as? SKNode {
-                node.setTreeHidden()
-                if let label = node as? SKLabelNode {
-                    label.brighten(false)
-                }
+        for node in children {
+            node.setTreeHidden()
+            if let label = node as? SKLabelNode {
+                label.brighten(false)
             }
         }
     }

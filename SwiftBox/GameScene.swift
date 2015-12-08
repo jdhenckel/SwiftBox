@@ -114,13 +114,13 @@ class GameScene: SKScene {
     
     func dumpNode(node: SKNode?, _ prefix: String) {
         if let nn = node {
-            println(prefix + "\(nn.dynamicType) nc=\(nn.children.count) hid=\(nn.hidden)")
+            print(prefix + "\(nn.dynamicType) nc=\(nn.children.count) hid=\(nn.hidden)")
             for xx in nn.children {
-                dumpNode(xx as? SKNode, prefix + " _ ")
+                dumpNode(xx, prefix + " _ ")
             }
         }
         else {
-            println(prefix + "nil")
+            print(prefix + "nil")
         }
     }
     
@@ -142,7 +142,7 @@ class GameScene: SKScene {
         return shape
     }
     
-    func createBoundaryBox(#x: CGFloat, y: CGFloat, w: CGFloat, h: CGFloat) -> SKNode {
+    func createBoundaryBox(x x: CGFloat, y: CGFloat, w: CGFloat, h: CGFloat) -> SKNode {
         let shape = SKSpriteNode(color: UIColor.blackColor(), size: CGSize(width: w,height: h))
         shape.position = CGPoint(x: x,y: y)
         let body = SKPhysicsBody(rectangleOfSize: CGSize(width: w,height: h))
@@ -155,8 +155,8 @@ class GameScene: SKScene {
     
     func createBoundaryPath() -> SKNode {
         let path = CGPathCreateMutable()
-        let inner = frame.rectByOffsetting(dx: -frame.midX, dy: -frame.midY)
-        let outer = inner.rectByInsetting(dx: -frame.midX, dy: -frame.midX)
+        let inner = frame.offsetBy(dx: -frame.midX, dy: -frame.midY)
+        let outer = inner.insetBy(dx: -frame.midX, dy: -frame.midX)
         CGPathMoveToPoint(path, nil, inner.origin.x, inner.origin.y)
         CGPathAddLineToPoint(path, nil, inner.origin.x, inner.origin.y + inner.size.height)
         CGPathAddLineToPoint(path, nil, inner.origin.x + inner.size.width, inner.origin.y + inner.size.height)
@@ -183,36 +183,28 @@ class GameScene: SKScene {
     // use a single touch to start dragging a body, and then add another touch to rotate it, and then
     // pull the fingers apart to scale it, all in a single gesture.
     
-    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
-        for t in touches {
-            if let touch = t as? UITouch {
-                touchCollector.begin(touch)
-            }
+    override func touchesBegan(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            touchCollector.begin(touch)
         }
     }
     
-    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
-        for t in touches {
-            if let touch = t as? UITouch {
-                touchCollector.move(touch)
-            }
+    override func touchesMoved(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            touchCollector.move(touch)
         }
     }
     
-    override func touchesEnded(touches: Set<NSObject>, withEvent event: UIEvent) {
-        for t in touches {
-            if let touch = t as? UITouch {
-                touchCollector.end(touch)
-            }
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        for touch in touches {
+            touchCollector.end(touch)
         }
         // dumpNodes()
     }
     
-    override func touchesCancelled(touches: Set<NSObject>, withEvent event: UIEvent) {
-        for t in touches {
-            if let touch = t as? UITouch {
-                touchCollector.cancel(touch)
-            }
+    override func touchesCancelled(touches: Set<UITouch>?, withEvent event: UIEvent?) {
+        for touch in touches! {
+            touchCollector.cancel(touch)
         }
     }
     

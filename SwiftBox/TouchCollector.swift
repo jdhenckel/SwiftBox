@@ -100,7 +100,7 @@ class TouchCollector {
     }
     
     private func find(touch:UITouch) -> Int {
-        for (i, t) in enumerate(touches) {
+        for (i, t) in touches.enumerate() {
             if t === touch {
                 return i
             }
